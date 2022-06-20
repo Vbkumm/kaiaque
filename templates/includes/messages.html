@@ -1,0 +1,15 @@
+{% block stylesheet %}
+{% endblock %}
+
+{% if messages %}
+<div class="row mt-5 pt-5 mr-md-5 fixed-top justify-content-end" style="position: flex" aria-atomic="true">
+        <ul class="messages">
+            {% for message in messages %}
+            <div {% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissible fade show"  id="myAlert"{% endif %} role="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            {% endfor %}
+            </div>
+        </ul>
+</div>
+{% endif %}

@@ -1,0 +1,25 @@
+{% extends 'accounts/base_accounts.html' %}
+
+{% block title %}Kaiaque Itajuru{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-sm-12">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title text-center" style="color: #2a363a;">Cadastro Kaiaque Itajuru.</h4>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {% include 'includes/form.html' %}
+             <div class="card-footer text-center text-muted" style="font-size:75%"> Ao se cadastrar, você concorda com nossos
+               <a href="{% url 'accounts:terms' %}" style="color: #2a363a;"><strong>Termos</strong></a> e <a href="{% url 'accounts:cookies' %}" style="color: #2a363a;">Política de Cookies.</a> </div>
+            <button type="submit" class="btn btn-block" style="background-color: #2a363a; color: #ebe3aa">Novo perfil</button>
+          </form>
+        </div>
+        <div class="card-footer text-muted text-center">
+          Já tenho cadastro? <a href="{% url 'accounts:login' %}" style="color: #2a363a">Entrar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

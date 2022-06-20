@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load markup_tags %}
+{% load humanize %}
+{% load countries %}
+{% get_countries as countries %}
+{% block stylesheet %}
+@import url(https://fonts.googleapis.com/css?family=Raleway:400,800);
+
+figure.snip1139 {
+  font-family: 'Raleway', Arial, sans-serif;
+  position: relative;
+  overflow: hidden;
+  margin: auto;
+  min-width: 220px;
+  max-width: 90%;
+  width: 100%;
+  color: #2a363a;
+  text-align: left;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+}
+figure.snip1139 * {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-transition: all 0.35s cubic-bezier(0.25, 0.5, 0.5, 0.9);
+  transition: all 0.35s cubic-bezier(0.25, 0.5, 0.5, 0.9);
+}
+figure.snip1139 img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+figure.snip1139 blockquote {
+  position: relative;
+  background-color: #ffffff;
+  padding: 25px 50px 25px 50px;
+  font-size: 1.1em;
+  font-weight: 500;
+  text-align: left;
+  margin: 0;
+  line-height: 1.6em;
+  font-style: italic;
+}
+figure.snip1139 blockquote:before,
+figure.snip1139 blockquote:after {
+  font-family: 'FontAwesome';
+  content: "\201C";
+  position: absolute;
+  font-size: 50px;
+  opacity: 0.3;
+  font-style: normal;
+}
+figure.snip1139 blockquote:before {
+  top: 25px;
+  left: 20px;
+}
+figure.snip1139 blockquote:after {
+  content: "\201D";
+  right: 20px;
+  bottom: 0;
+}
+figure.snip1139 .arrow {
+  top: 100%;
+  width: 0;
+  height: 0;
+  border-left: 0 solid transparent;
+  border-right: 25px solid transparent;
+  border-top: 25px solid #ffffff;
+  margin: 0;
+  position: absolute;
+}
+figure.snip1139 .author {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 5px 25px;
+  color: #000000;
+  background-color: #ffffff;
+  margin: 0;
+  text-transform: uppercase;
+}
+figure.snip1139 .author h5 {
+  opacity: 0.8;
+  margin: 0;
+  font-weight: 800;
+}
+figure.snip1139 .author h5 span {
+  font-weight: 400;
+  text-transform: none;
+  padding-left: 5px;
+}
+
+body{background-color: #ffffff}
+{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<br>
+<figure class="snip1139">
+  <blockquote>{{ profile.bio }}
+    <div class="arrow"></div>
+  </blockquote>
+    {% if profile.profile_cover %}
+        <img src="{{MEDIA_URL}}{{profile.profile_cover}}" alt="{{ profile.profile_cover }}"/>
+    {% else %}
+    <br><br><br><br><br><br>
+    {% endif %}
+  <div class="author">
+      {% if profile.first_name %}
+        <h5 class="ml-4">{{ profile.first_name|slice:":15"  }} {{ profile.last_name|slice:":15"  }}
+            <span>  {{ profile.location.name }}</span></h5>
+      {% else %}
+        <h5>{{ profile.user }}
+            <span>  {{ profile.location.name }}</span></h5>
+      {% endif %}
+
+      <div class="row justify-content-end">
+          <ul class="fa-ul">
+              <div class="row">
+                  <!-- Facebook -->
+                  {% if profile.facebook %}
+                  <div class="col-2 ml-2 pl-1">
+                      <li>
+                          <a class="fb-ic fa-2x" href="{{ profile.facebook }}" target=_blank>
+                              <i class="fa fa-facebook-square" aria-hidden="true"></i>
+                          </a>
+                      </li>
+                  </div>
+                  {% endif %}
+                  <!-- YouTube +-->
+                  {% if profile.you_tube %}
+                  <div class="col-2 ml-2 pl-1">
+                      <li>
+                          <a class="yt-ic fa-2x" href="{{ profile.you_tube }}" target=_blank>
+                              <i class="fa fa-youtube" aria-hidden="true"></i>
+                          </a>
+                      </li>
+                  </div>
+                  {% endif %}
+                  <!--Instagram-->
+                  {% if profile.instagram %}
+                  <div class="col-2 mr-l pr-l">
+                      <li>
+                          <a class="ins-ic fa-2x" href="{{ profile.instagram }}" target=_blank>
+                              <i class="fa fa-instagram" aria-hidden="true"></i>
+                          </a>
+                      </li>
+                  </div>
+                  {% endif %}
+                  <!--Url-->
+                  {% if profile.url %}
+                  <div class="col-2 ml-2 pl-1">
+                      <li>
+                          <a class="ins-ic fa-2x" href="{{ profile.url }}" target=_blank>
+                              <i class="fa fa-anchor" aria-hidden="true"></i>
+                          </a>
+                      </li>
+                  </div>
+                  {% endif %}
+
+                  <div class="col-1 ml-2 pl-1">
+                      <ul class="btn dropup border-0" style="background-color: #ffffff;">
+                          <li class="dropup">
+                              <button class="btn btn-sm btn-secondary border-white" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                   {% if user.is_authenticated and profile.user == user %}
+                                  <a class="dropdown-item" href="{% url 'accounts:my_account' %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Preferências</a>
+                                  <a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="fa fa-sign-out" aria-hidden="true"></i> sair</a>
+                                  {% endif %}
+                              </div>
+                          </li>
+                      </ul>
+                  </div>
+
+              </div>
+          </ul>
+      </div>
+
+  </div>
+</figure>
+<br>
+
+{% endblock %}
+{% block javascript %}
+<script>
+    $(document).ready(function(){
+        $('.dropdown-toggle').dropdown()
+    });
+
+    $(document).ready(function(){
+        $("#myToast").toast('show');
+    });
+
+</script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+
+
+{% endblock %}

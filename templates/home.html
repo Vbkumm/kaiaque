@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load markup_tags %}
+{% load humanize %}
+
+
+{% block stylesheet %}
+
+{% endblock %}
+
+{% block breadcrumb %}{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<div class="toast fixed-bottom mb-5 pb-5 mr-5 btn-sm" id="myToast" aria-live="assertive" style="position: flex" aria-atomic="true">
+    <div class="toast-header" style="position: absolute; top:0; right:0;">
+            <div class="row">
+                <a href="{% url 'board:experience_wizard_create' %}" class="btn ins-ic rounded-circle fa-3x p-1 btn-primary" title="Altere as configurações da pagina!" data-toggle="tooltip" data-placement="right">
+                    <div class="col">
+                        <i class="fa fa-magic" aria-hidden="true"></i>
+                    </div>
+
+                </a>
+            </div>
+    </div>
+</div>
+{% endif %}
+  <!-- Header -->
+<header>
+        <div class="card border-0 text-white" id="home">
+          <img class="card-img" src="{% static 'img/kaiaque.png' %}" alt="kaiaque">
+          <div class="card-img-overlay">
+            <h1 class="card-title m-md-5 text-center p-md-5 text-left">
+                Encontre uma atividade que combine com você
+                ou crie uma que você tenha experiencia e confiança em compartilhar
+                e ainda fature uma grana extra!
+                </h1>
+          </div>
+        </div>
+</header>
+<br>
+
+<!-- /.atividades -->
+      <div class="d-md-flex px-sm-3">
+        <div class="card-columns" id="experiences">
+            {% for experience in experiences %}
+          <div class="box-shadow bg-white rounded">
+            <div class="card w-100">
+                 <div class="container-fluid p-0">
+
+                    <!-- SLIDERS -->
+
+                     <div id="Slider{{ experience.pk }}" class="carousel slide" data-ride="carousel">
+                        {% if experience.e_photos  %}
+                        <div class="carousel-inner">
+                            {% for e_photo in experience.e_photos.all %}
+
+                            {% if forloop.counter == 1 %}
+                            <div class="carousel-item active">
+                                <img class="d-block w-100" src="{{MEDIA_URL}}{{e_photo.experience_photo}}" alt="{{e_photo}}">
+                            </div>
+                            {% else %}
+                            <div class="carousel-item">
+                                <img class="d-block w-100" src="{{MEDIA_URL}}{{e_photo.experience_photo}}" alt="{{ e_photo }}">
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+
+                            <a class="carousel-control-prev" href="#Slider{{ experience.pk }}" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next text-faded" href="#Slider{{ experience.pk }}" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
+
+                        </div>
+                        {% endif %}
+                     </div>
+
+                 </div>
+
+
+              <div class="card-body">
+                <h4 class="card-title">{{ experience.experience_title }}</h4>
+                <p class="card-text">{{ experience.get_description_as_markdown|slice:":200" }}{% if experience.get_description_as_markdown|length > 201 %}...{% endif %}</p>
+
+
+
+                <div class="col-12">
+                  <div class="row">
+                       <div class="col-6 text-center p-1">
+                           <p class="border rounded small p-3 mb-2 border-primary text-primary">Categoria <br><strong>{{ experience.category_sport }}</strong></p>
+                       </div>
+                       <div class="col-6 text-center p-1">
+                           <p class="border rounded small p-3 mb-2 border-primary text-primary">Dificuldade <br><strong>{% if experience.experience_difficulty == '1' %}facil{% endif %}{% if experience.experience_difficulty == '2' %}medio{% endif %}{% if experience.experience_difficulty == '3' %}dificil{% endif %}{% if experience.experience_difficulty == '4' %}expert{% endif %}
+                           </strong>
+                           </p>
+                       </div>
+                  </div>
+                  <div class="row">
+                       <div class="col-6 text-center p-1">
+                           <p class="border rounded small p-3 mb-2 border-primary text-primary">Idade<br>minima<br><strong>{{ experience.experience_age }}</strong></p>
+                       </div>
+                       <div class="col-6 text-center p-1">
+                           <p class="border rounded small p-3 mb-2 border-primary text-primary">Nº Participantes<br><strong>{{ experience.experience_people }}</strong></p>
+                       </div>
+                  </div>
+                  <div class="row">
+                       <div class="col-6 text-center p-1">
+                           <p class="border rounded small p-3 mb-2 border-primary text-primary">Pets<br>{% if experience.experience_pet %}<strong>Permetido</strong>{% else %}<strong>Não<br>Permetido</strong>{% endif %}</p>
+                       </div>
+                       <div class="col-6 text-center p-1">
+                           <p class="border rounded small p-3 mb-2 border-primary text-primary">Duração<br><strong>{{ experience.experience_duration|intcomma }}</strong><br>{% if experience.experience_duration_method == 'mi' %}minuto{% endif %}{% if experience.experience_duration_method == 'ho' %}hora{% endif %}{% if experience.experience_duration_method == 'di' %}dia{% endif %}{% if experience.experience_duration_method == 'se' %}semana{% endif %}{% if experience.experience_duration > 1 %}s{% endif %}
+                           </p>
+                       </div>
+                  </div>
+                  <div class="row">
+                       <div class="col-6 text-center p-1">
+
+                           {% if experience.experience_value %}
+
+                               <p class="border rounded small p-3 mb-2 border-primary text-primary">Valor
+                               <br>
+
+                           {% for e_price in experience.e_prices.all %}
+                               R$ <strong>{{ e_price.experience_price }}</strong>
+                                   <br>{% if e_price.experience_price_method == 'pe' %}por pessoa
+                                   {% endif %}
+                                   {% if e_price.experience_price_method == 'ac' %}
+                                   por atividade
+                                   {% endif %}
+                                   {% if e_price.experience_price_method == 'hp' %}por hora/pessoa
+                                   {% endif %}{% if e_price.experience_price_method == 'ha' %}por hora/atividade{% endif %}
+
+                            {% endfor %}
+                           </p>
+                           {% endif %}
+                       </div>
+                       <div class="col-6 text-center p-1">
+                           <p class="border rounded small p-3 mb-2 border-primary text-primary"><strong>Afitrião</strong><br>{% if experience.experience_supervisor %}<strong>tem que<br>acompanhar</strong>{% else %}<strong>não precisa<br>acompanhar</strong>{% endif %}
+                           </p>
+                       </div>
+
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="card-footer">
+                  <a href="{% url 'board:experience_detail' experience.pk %}" class="btn btn-primary btn-lg">
+                      <img class="mb-1 mr-1" style="width: 1rem;" src="{% static 'img/plus.svg' %}" alt="link">
+                                  <strong>Detalhes!</strong></a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    <!-- /.row -->
+
+    <!-- /.anfitriao -->
+      <div class="row" id="afitriao">
+          {% for profile in profiles %}
+          <div class="col-md-4 mb-5">
+            <div class="card h-100">
+                {% if profile.profile_cover %}
+                <img class="card-img-top" src="{{MEDIA_URL}}{{profile.profile_cover}}" alt="{{ profile.profile_cover }}">
+                {% else %}
+                <br>
+                {% endif %}
+              <div class="card-body">
+                {% if profile.avatar %}
+                <img class="img-fluid float-left m-3 mt-2 d-block rounded-circle" style="width: 5rem; height: 5rem" src="{{MEDIA_URL}}{{profile.avatar}}" alt="{{ profile.avatar }}">
+                {% else %}
+                <br>
+                {% endif %}
+                {% if profile.first_name %}
+                <h5 class="ml-4">{{ profile.first_name|slice:":15"  }} {{ profile.last_name|slice:":15"  }}
+                    <span>  {{ profile.location.name }}</span></h5>
+                {% else %}
+                <h5>{{ profile.user }}
+                    <span>  {{ profile.location.name }}</span></h5>
+                {% endif %}
+                <p class="card-text">{{ profile.bio }}</p>
+              </div>
+              <div class="row bg-primary justify-content-end">
+                  <ul class="fa-ul">
+                      <div class="row">
+                          <!-- Facebook -->
+                          {% if profile.facebook %}
+                          <div class="col-2 ml-2 pl-1">
+                              <li>
+                                  <a class="fb-ic fa-2x" href="{{ profile.facebook }}" target=_blank>
+                                      <img class="d-block mt-2" style="width: 2rem" src="{% static 'img/facebook.svg' %}" alt="facebook">
+                                    </a>
+                              </li>
+                          </div>
+                          {% endif %}
+                          <!-- YouTube +-->
+                          {% if profile.you_tube %}
+                          <div class="col-2 ml-2 pl-1">
+                              <li>
+                                  <a class="yt-ic fa-2x" href="{{ profile.you_tube }}" target=_blank>
+                                      <img class="d-block mt-2" style="width: 2rem" src="{% static 'img/youtube.svg' %}" alt="youtube">
+                                  </a>
+                              </li>
+                          </div>
+                          {% endif %}
+                          <!--Instagram-->
+                          {% if profile.instagram %}
+                          <div class="col-2 mr-l pr-l">
+                              <li>
+                                  <a class="ins-ic fa-2x" href="{{ profile.instagram }}" target=_blank>
+                                      <img class="d-block mt-2" style="width: 2rem" src="{% static 'img/instagram.svg' %}" alt="airbnb">
+                                  </a>
+                              </li>
+                          </div>
+                          {% endif %}
+                          <!--Url-->
+                          {% if profile.url %}
+                          <div class="col-2 ml-2 pl-1">
+                              <li>
+                                  <a class="ins-ic fa-2x" href="{{ profile.url }}" target=_blank>
+                                      <img class="d-block mt-2" style="width: 2rem" src="{% static 'img/link.svg' %}" alt="link">
+                                  </a>
+                              </li>
+                          </div>
+                          {% endif %}
+                    </div>
+                  </ul>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+      </div>
+
+
+
+
+
+{% endblock %}
+{% block javascript %}
+
+
+{% endblock %}

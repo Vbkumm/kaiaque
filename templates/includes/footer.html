@@ -1,0 +1,72 @@
+<!-- Grid row-->
+{% load static %}
+{% load countries %}
+{% get_countries as countries %}
+
+{% if request.get_full_path == "/" %}
+    <div class="row pt-1 bg-primary justify-content-center" >
+      <!-- Grid column -->
+      <div class="col-md-6 col-lg-8 align-self-center">
+        <div class="row justify-content-center">
+          <img class="d-block" style="width: 12rem" src="{% static 'img/logokaiaque.png' %}" alt="logokaiaque">
+        </div>
+      </div>
+
+
+      <!-- Grid column -->
+
+      <!-- Grid column -->
+      <div class="col-md-6 col-lg-4 align-self-center" id="contato">
+        <ul class="fa-ul">
+          <div class="row justify-content-center">
+            <!-- Airbnb -->
+              <div class="col mr-1 pr-1">
+                <li>
+                  <a class="tw-ic fa-2x" href="https://www.airbnb.com.br/experiences/504632" target=_blank>
+                    <img class="d-block mt-2" style="width: 2rem" src="{% static 'img/airbnb.svg' %}" alt="airbnb">
+                  </a>
+                </li>
+              </div>
+                <!--Instagram-->
+              <div class="col mr-1 pr-1">
+                <li>
+                  <a class="ins-ic fa-2x" href="https://www.instagram.com/kaiaqueitajuru/" target=_blank style="color:#ffffff">
+                    <img class="d-block mt-2" style="width: 2rem" src="{% static 'img/instagram.svg' %}" alt="airbnb">
+                  </a>
+                </li>
+              </div>
+
+              <div class="col mr-1 pr-1">
+                <li>
+                  <a class="ins-ic fa-2x"
+                     href="https://api.whatsapp.com/send?phone=+5522999900058&text= Olá, gostaria de agendar um passeio de caiaque!'" target=_blank style="color:#ffffff">
+                    <img class="d-block mt-2" style="width: 2rem" src="{% static 'img/whatsapp.svg' %}" alt="airbnb">
+                  </a>
+                </li>
+              </div>
+          </div>
+        </ul>
+      </div>
+      <!-- Grid column -->
+    </div>
+{% else %}
+<div>
+  <div class="row p-1">
+  </div>
+</div>
+{% endif %}
+      <!-- Grid row-->
+<!-- Footer -->
+<footer class="page-footer font-small teal">
+
+
+  <!-- Footer Text -->
+
+  <!-- Copyright -->
+  <div class="col-12 footer-copyright text-center py-2">© 2019 Copyright:
+    <a href="/">Kaiak Itajuru</a>
+  </div>
+  <!-- Copyright -->
+
+</footer>
+<!-- Footer -->

@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fotos da Experiencia{% endblock %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'css/simplemde.min.css' %}">
+
+{% endblock %}
+
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<br><br>
+<div class="container">
+
+
+  {# 1. BUTTON TO TRIGGER THE ACTION #}
+  <br>
+  <div class="col-12">
+    {% if user.is_authenticated and experience.author_experience == user %}
+      <div class="well bg-light text-muted text-center" style="padding-top: 4rem; padding-bottom: 4rem;">
+          <span class="glyphicon glyphicon-arrow-down" style="font-size: 4rem;"></span>
+          <img class="card-img m-1" style="width: 2rem" src="{% static 'img/arrow-down.svg' %}" alt="kaiaque">
+          <h3>Arraste aqui suas fotos</h3>
+      </div>
+
+      <button type="button" class="btn btn-primary js-upload-photos">
+        <strong>Clique para selecionar-las</strong>
+      </button>
+
+    <br>
+
+
+  {# 2. FILE INPUT TO BE USED BY THE PLUG-IN #}
+      <input id="fileupload" type="file" name="experience_photo" multiple
+             style="display: none;"
+             data-url="{% url 'board:experience_photo_gallery_create' experience.pk %}"
+             data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
+    <br>
+  {# 3. TABLE TO DISPLAY THE UPLOADED PHOTOS #}
+      <table id="gallery" class="table table-bordered">
+        <thead>
+          <tr>
+            <th><h3 class="float-left">Fotos salvas estão marcadas com<img class="img p-1" style="width: 2rem" src="{% static 'img/check.svg' %}" alt="check">
+                para salvar as fotos carregadas clique em confirmar.</h3>
+              <div class="col-md-3 float-right">
+                  <a href="{% url 'board:experience_detail' experience.pk %}" class="btn btn-primary">
+                    <img class="img p-1" style="width: 2rem" src="{% static 'img/clipboard-check.svg' %}" alt="clipboard">
+                  <strong>Confirmar</strong>
+                  </a>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+        {% endif %}
+
+      {% for e_photo in e_photos reversed %}
+        <tr>
+          <td><a href="{{ e_photo.experience_photo.url }}">
+            {% if e_photo.experience_photo %}
+            <img class="col-1" src="{{MEDIA_URL}}{{ e_photo.experience_photo }}" alt="{{ e_photo.experience_photo }}"/>
+            {% else %}
+            <br>
+            {% endif %}
+            {{ e_photo.experience_photo.name }}
+            <img class="img p-1" style="width: 2rem" src="{% static 'img/check.svg' %}" alt="check">
+              </a>
+
+        {% if user.is_authenticated and experience.author_experience == user %}
+            <div class="col-2 float-right">
+                  <a href="{% url 'board:experience_photo_delete' e_photo.experience.pk e_photo.pk %}" class="btn btn-primary">
+                      <img class="d-block" style="width: 1rem" src="{% static 'img/trash.svg' %}" alt="trash">
+                  </a>
+            </div>
+        {% endif %}
+
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+ <div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Carregando fotos...</h4>
+      </div>
+      <div class="modal-body">
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+
+
+
+{% endblock %}
+
+{% block javascript %}
+  {# JQUERY FILE UPLOAD SCRIPTS #}
+  <script src="{% static 'js/jquery-file-upload/vendor/jquery.ui.widget.js' %}"></script>
+  <script src="{% static 'js/jquery-file-upload/load-image.all.min.js' %}"></script>
+  <script src="{% static 'js/jquery-file-upload/canvas-to-blob.min.js' %}"></script>
+  <script src="{% static 'js/jquery-file-upload/jquery.iframe-transport.js' %}"></script>
+  <script src="{% static 'js/jquery-file-upload/jquery.fileupload.js' %}"></script>
+  <script src="{% static 'js/jquery-file-upload/jquery.fileupload-process.js' %}"></script>
+  <script src="{% static 'js/jquery-file-upload/jquery.fileupload-image.js' %}"></script>
+
+  {# PHOTOS PAGE SCRIPTS #}
+  <script src="{% static 'js/basic-upload.js' %}"></script>
+
+
+<script type="text/javascript">
+
+For this you can use file added callback to validate files, like this, use "return false" to avoid adding that file;
+
+ $('#fileupload').fileupload({
+                    add: function (e, data) {
+                        var fileType = data.files[0].name.split('.').pop(), allowdtypes = 'svg, gif, jpeg, jpg, png, heic, mp4';
+                        if (allowdtypes.indexOf(fileType) < 0) {
+                            alert('Invalid file type, aborted');
+                            return false;
+                        }
+
+                    }
+                });
+</script>
+
+
+  <script type="text/javascript">
+  $('#fileupload').fileupload({
+      url: '//jquery-file-upload.appspot.com/',
+      dataType: 'json',
+      // Enable image resizing, except for Android and Opera,
+      // which actually support image resizing, but fail to
+      // send Blob objects via XHR requests:
+      disableImageResize: /Android(?!.*Chrome)|Opera/
+          .test(window.navigator && navigator.userAgent),
+      imageMaxWidth: 800,
+      imageMaxHeight: 800,
+      imageCrop: true // Force cropped images
+
+
+  })
+
+  </script>
+
+<script type="text/javascript">
+
+ stop: function (e) { /* 3. WHEN THE UPLOADING PROCESS FINALIZE, HIDE THE MODAL */
+    $("#modal-progress").modal("hide");
+    // Ensure hide occurs after the fade animation has completed
+    setTimeout(function(){$("#modal-progress").modal("hide")}, 1000)
+    },
+
+</script>
+
+
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete seu comentario!{% endblock %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'css/simplemde.min.css' %}">
+{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'js/simplemde.min.js' %}"></script>
+  <script>
+    var simplemde = new SimpleMDE();
+  </script>
+{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<br><br>
+<div class="container">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <p>Você quer mesmo deletar seu comentario?</p>
+    <a href="/" class="btn btn-danger">Cancelar</a>
+    <button type="submit" class="btn btn-success">Deletar</button>
+  </form>
+</div>
+<br>
+{% endblock %}

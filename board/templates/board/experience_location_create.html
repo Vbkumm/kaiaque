@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load leaflet_tags %}
+
+{% block head %}
+{% leaflet_css %}
+{% leaflet_js %}
+{% leaflet_js plugins="forms" %}
+{% leaflet_css plugins="forms" %}
+{% endblock %}
+
+{% block title %}Local de encotro para realização da Experiencia{% endblock %}
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'css/simplemde.min.css' %}">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<br><br>
+<div class="container">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% include 'includes/form.html' %}
+    <div class="row mr-1 justify-content-end">
+      <button type="submit" class="btn btn-success">Salvar</button>
+    </div>
+  </form>
+</div>
+<br>
+{% endblock %}
+
+{% block javascript %}
+<script>
+
+	var map = L.map('id_e_location-map').fitWorld();
+
+	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		id: 'mapbox/streets-v11'
+	}).addTo(map);
+
+	function onLocationFound(e) {
+		var radius = e.accuracy / 2;
+
+	}
+
+	function onLocationError(e) {
+		alert(e.message);
+	}
+
+	map.on('locationfound', onLocationFound);
+	map.on('locationerror', onLocationError);
+
+	map.locate({setView: true, maxZoom: 10});
+
+
+	function onMapClick(e) {
+      marker = new L.marker(e.latlng, {draggable:'true'});
+      marker.on('dragend', function(event){
+        var marker = event.target;
+        var position = marker.getLatLng();
+        marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+        map.panTo(new L.LatLng(position.lat, position.lng))
+
+      });
+
+      map.addLayer(marker);
+
+    };
+
+    map.on('click', onMapClick);
+
+
+
+
+
+</script>
+<script type="text/javascript">
+    var geodjango_id_e_location = {};
+    geodjango_id_e_location.fieldid = 'id_e_location';
+    geodjango_id_e_location.modifiable = true;
+    geodjango_id_e_location.geom_type = 'Point';
+    geodjango_id_e_location.srid = 4326;
+
+
+    function id_e_location_map_callback(map, options) {
+        geodjango_id_e_location.store_class = L.FieldStore;
+        (new L.GeometryField(geodjango_id_e_location)).addTo(map);
+
+    };
+
+
+</script>
+
+
+{% endblock %}
+
+

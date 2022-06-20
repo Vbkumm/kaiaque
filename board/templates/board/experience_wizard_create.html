@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+
+{% block head %}
+{{ wizard.form.media }}
+{% endblock %}
+
+{% block title %}Nova Experiencia{% endblock %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'css/simplemde.min.css' %}">
+{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'js/simplemde.min.js' %}"></script>
+  <script>
+    var simplemde = new SimpleMDE();
+  </script>
+{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<br><br>
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-8 col-sm-10 mt-2">
+        <p>Passo {{ wizard.steps.step1 }} de {{ wizard.steps.count }}</p>
+        {% if wizard.steps.step1 == 1 %}
+                <a href="{% url 'board:category_sport_create' %}" class="btn ins-ic p-1 btn-primary" title="Adicione uma nova categoria!" data-toggle="tooltip" data-placement="right">
+                    <div class="col">
+                         <i class="fa fa-plus fa-1x" aria-hidden="true"></i>
+                         Categoria
+                    </div>
+                </a>
+        {% endif %}
+        <form action="" method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+        <table>
+        {{ wizard.management_form }}
+        {% if wizard.form.forms %}
+            {{ wizard.form.management_form }}
+            {% for form in wizard.form.forms %}
+                {{ form|crispy }}
+            {% endfor %}
+        {% else %}
+        {% include 'includes/form.html' %}
+            {% endif %}
+        </table>
+        {% if wizard.steps.prev %}
+        <button name="wizard_goto_step" type="submit" class="btn btn-primary" value="{{ wizard.steps.first }}">{% trans "first step" %}</button>
+        <button name="wizard_goto_step" type="submit" class="btn btn-primary" value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
+        {% endif %}
+        <input type="submit" class="btn btn-primary float-right" value="{% trans "submit" %}"/>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

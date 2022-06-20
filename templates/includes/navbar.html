@@ -1,0 +1,42 @@
+{% load static %}
+<nav class="navbar navbar-dark bg-primary fixed-top navbar-expand-sm">
+    <a class="navbar-brand" href="{% url 'home' %}">
+        <img class="d-block" style="width: 12rem" src="{% static 'img/logokaiaque.png' %}" alt="logokumm">
+    </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#conteudoNavbarSuportado" aria-controls="conteudoNavbarSuportado" aria-expanded="false" aria-label="Alterna navegação">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="conteudoNavbarSuportado">
+      <ul class="navbar-nav ml-auto">
+          <li class="nav-item {% if 'home' in request.get_full_path %}active{% endif %}" href="#home">
+            <a class="nav-link text-center" href="{% url 'home' %}#afitriao">Participantes com<br>atividades</a>
+          </li>
+          <li class="nav-item {% if 'passeio' in request.get_full_path %}active{% endif %}" href="#passeio">
+            <a class="nav-link text-center" href="{% url 'home' %}#experiences">Lista de<br>atividades</a>
+          </li>
+          <li class="nav-item {% if 'contato' in request.get_full_path %}active{% endif %}" href="#contato">
+            <a class="nav-link text-center" href="{% url 'home' %}#contato">Contato</a>
+          </li>
+      </ul>
+      {% if user.is_authenticated %}
+                  <ul class="navbar-nav mr-2 ml-auto">
+                      <a class="btn btn-sm px-4 btn-primary border-0" href="{% url 'accounts:profile' username=user %}">
+                          <div class="row">
+                              {% if user.profile.avatar %}
+                              <img class="img rounded-circle" style="width: 2rem; height: 2rem" src="{{MEDIA_URL}}{{ user.profile.avatar }}" alt="{{ user.profile.avatar }}">
+                              {% else %}
+                              <i class="fa fa-2x fa-user-circle-o" aria-hidden="true"></i>
+                              {% endif %}
+                              <div class="row m-1">{{ user.username|slice:":15" }}</div>
+                          </div>
+                      </a>
+                  </ul>
+            {% else %}
+              <form class="form-inline justify-content-end ml-auto">
+                <a href="{% url 'accounts:login' %}" class="btn-sm mr-1 btn-primary">Entrar</a>
+                <a href="{% url 'accounts:signup' %}" class="btn-sm bg-white btn-outline-primary md-ml-2 sm-mr-1 mr-1">Cadastro</a>
+              </form>
+            {% endif %}
+  </div>
+</nav>
+<br><br>

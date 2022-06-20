@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+
+{% block title %}My account{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<br>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-8 col-sm-10">
+        {% if user.profile.avatar %}
+           <img class="img rounded-circle" style="width: 8rem; height: 8rem" src="{{MEDIA_URL}}{{ user.profile.avatar }}" alt="{{ user.profile.avatar }}">
+        {% else %}
+            <i class="fa fa-2x fa-user-circle-o" aria-hidden="true"></i>
+        {% endif %}
+        <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% include 'includes/form.html' %}
+            <div class="col text-right">
+                <button type="submit" class="btn p-2 px-4 btn-success">Salvar perfil</button>
+            </div>
+      </form>
+    </div>
+      <div class="col-lg-8 col-md-8 col-sm-10 mt-2">
+          <h5 class="card-title text-left">Trocar senha:</h5>
+         <p class="card-title text-justify">Para configuração de nova senha pessoal, enviaremos um email com instruções e link para criar uma nova senha. Clique no botão a baixo.</p>
+         <div class="row mr-2 justify-content-end">
+             <ul class="nav nav-pills">
+                 <li class="nav-item">
+                     <a class="nav-link text-center active" href="{% url 'accounts:password_change' %}">Enviar email com reset de senha</a>
+                 </li>
+             </ul>
+         </div>
+      </div>
+  </div>
+</div>
+<br>
+{% endblock %}

@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load markup_tags %}
+{% load humanize %}
+{% load countries %}
+{% get_countries as countries %}
+{% load leaflet_tags %}
+
+
+{% block head %}
+{% leaflet_css %}
+{% leaflet_js %}
+<style>
+
+    .marker {margin: 0;}
+
+
+</style>
+{% endblock %}
+
+
+{% block stylesheet %}{% endblock %}
+{% block breadcrumb %}{% endblock %}
+
+{% block content %}
+<br>
+<div class="container-fluid mt-1">
+    <div class="row row-cols-1  bg-primary pb-2 mb-1 row-cols-md-2 justify-content-center">
+      {% for e_photo in experience.e_photos.all %}
+        {% if e_photo.experience_photo %}
+        <div class="card border-0 m-1 p-1" style="width: 10rem;">
+            <a href="{{ e_photo.experience_photo.url }}">
+                <img class="card-img-top" src="{{MEDIA_URL}}{{e_photo.experience_photo}}" alt="{{ e_photo.experience_photo }}"/>
+            </a>
+        </div>
+            {% else %}
+      <br>
+      {% endif %}
+      {% endfor %}
+
+    </div>
+
+
+  <div class="d-md-flex px-sm-3">
+      <div class="col-md-3 text-danger">
+          <h1>{{ experience.experience_title }}</h1>
+          {% if user.is_authenticated and experience.author_experience == user %}
+          <div class="col-md-3 m-1">
+              <a href="{% url 'board:experience_photo_gallery_create' object.pk %}" class="btn btn-primary">{% if experience.e_photos.all %}Gerenciar{% else %}Adicionar{% endif %}<br>Imagens</a>
+          </div>
+
+          {% endif %}
+      </div>
+      <div class="col-md-12 my-2">
+      <div class="row">
+           <div class="col-3 col-md-2 text-center p-1">
+               <p class="border rounded small p-3 mb-2 border-primary text-primary">Categoria <br><strong>{{ experience.category_sport }}</strong></p>
+           </div>
+           <div class="col-3 col-md-2 text-center p-1">
+               <p class="border rounded small p-3 mb-2 border-primary text-primary">Dificuldade <br><strong>{% if experience.experience_difficulty == '1' %}facil{% endif %}{% if experience.experience_difficulty == '2' %}medio{% endif %}{% if experience.experience_difficulty == '3' %}dificil{% endif %}{% if experience.experience_difficulty == '4' %}expert{% endif %}
+               </strong>
+               </p>
+           </div>
+           <div class="col-3 col-md-2 text-center p-1">
+               <p class="border rounded small p-3 mb-2 border-primary text-primary">Idade<br>minima<br><strong>{{ experience.experience_age }}</strong></p>
+           </div>
+           <div class="col-3 col-md-2 text-center p-1">
+               <p class="border rounded small p-3 mb-2 border-primary text-primary">Nº Participantes<br><strong>{{ experience.experience_people }}</strong></p>
+           </div>
+      </div>
+      <div class="row">
+           <div class="col-3 col-md-2 text-center p-1">
+               <p class="border rounded small p-3 mb-2 border-primary text-primary">Pets<br>{% if experience.experience_pet %}<strong>Permetido</strong>{% else %}<strong>Não<br>Permetido</strong>{% endif %}</p>
+           </div>
+           <div class="col-3 col-md-2 text-center p-1">
+               <p class="border rounded small p-3 mb-2 border-primary text-primary">Duração<br><strong>{{ experience.experience_duration|intcomma }}</strong><br>{% if experience.experience_duration_method == 'mi' %}minuto{% endif %}{% if experience.experience_duration_method == 'ho' %}hora{% endif %}{% if experience.experience_duration_method == 'di' %}dia{% endif %}{% if experience.experience_duration_method == 'se' %}semana{% endif %}{% if experience.experience_duration > 1 %}s{% endif %}
+               </p>
+           </div>
+           <div class="col-3 col-md-2 text-center p-1">
+               {% if experience.experience_value and user.is_authenticated and experience.author_experience == user and experience.e_prices.all.count == 0 %}
+               <a href="{% url 'board:experience_price_create' object.pk %}" class="btn btn-sm btn-primary"><strong>Adicionar<br>valor na</strong><br>experiencia</a>
+              {% else %}
+               {% if not experience.experience_value %}
+               <p class="border rounded small p-3 mb-2 border-primary text-primary"><strong>gratuita!</strong></p>
+                   {% else %}
+                   <p class="border rounded small p-3 mb-2 border-primary text-primary">Valor
+                   <br>
+
+               {% for e_price in experience.e_prices.all %}
+                   R$ <strong>{{ e_price.experience_price }}</strong>
+                       <br>{% if e_price.experience_price_method == 'pe' %}por pessoa
+                       {% endif %}
+                       {% if e_price.experience_price_method == 'ac' %}
+                       por atividade
+                       {% endif %}
+                       {% if e_price.experience_price_method == 'hp' %}por hora/pessoa
+                       {% endif %}{% if e_price.experience_price_method == 'ha' %}por hora/atividade{% endif %}
+                       {% if user.is_authenticated and e_price.experience.author_experience == user %}
+
+
+                                  <a href="{% url 'board:experience_price_update' e_price.experience.pk e_price.pk %}" class="btn btn-primary">
+                                      <img class="d-block" style="width: 1rem" src="{% static 'img/pencil.svg' %}" alt="update">
+
+                                  </a>
+
+                        {% endif %}
+                {% endfor %}
+               </p>
+               {% endif %}
+               {% endif %}
+           </div>
+           <div class="col-3 col-md-2 text-center p-1">
+               <p class="border rounded small p-3 mb-2 border-primary text-primary"><strong>Afitrião</strong><br>{% if experience.experience_supervisor %}<strong>tem que<br>acompanhar</strong>{% else %}<strong>não precisa<br>acompanhar</strong>{% endif %}
+               </p>
+           </div>
+
+      </div>
+  </div>
+  </div>
+    <div class="d-md-flex mt-2">
+        <div class="col-md-3 text-primary mt-md-4 mx-sm-2">
+            <h3>Como será essa atividade</h3>
+
+
+
+          {% if user.is_authenticated and experience.author_experience == user %}
+
+          <div class="col-md-3 mt-1">
+              <a href="{% url 'board:experience_update' object.pk %}" class="btn btn-primary">
+                  <img class="img mr-2" style="width: 1rem" src="{% static 'img/pencil.svg' %}" alt="update">
+                    atividade
+              </a>
+          </div>
+        </div>
+
+          {% endif %}
+        <div class="col-md-8">
+            <div class="card-body text-primary">
+                <p class="card-text">{{ experience.get_description_as_markdown }}</p>
+            </div>
+        </div>
+    </div>
+
+     <div class="d-md-flex mt-2 pb-1 mb-3 bg-primary text-white border rounded border-primary">
+            <div class="col-md-3 mt-2 mx-sm-2">
+                <h3>Saiba mais sobre seu anfitrião</h3>
+
+            </div>
+            <div class="col-md-9">
+                <div class="card-body">
+                    <div class="row m-1">
+                        {% if experience.author_experience.profile.avatar %}
+                        <img class="img-fluid m-1 rounded-circle" style="width: 5rem; height: 5rem" src="{{MEDIA_URL}}{{ experience.author_experience.profile.avatar }}" alt="{{ experience.author_experience.profile.avatar }}">
+                        {% else %}
+                        <i class="fa fa-2x fa-user-circle-o" aria-hidden="true"></i>
+                        {% endif %}
+                        <h4 class="align-self-end m-2">
+                        {% if experience.author_experience.profile.first_name %}
+                        {{ experience.author_experience.profile.first_name }} {{ experience.author_experience.profile.last_name }}
+                        {% else %}
+                        {{ experience.author_experience.profile.user }}
+                        {% endif %}</h4>
+                    </div>
+                    <p class="card-text"> {{ experience.author_experience.profile.bio }}</p>
+                </div>
+                <a class="nav-link btn-sm text-white active" href="{% url 'accounts:profile' object.author_experience.profile.user %}">
+                    Mais sobre mim...</a>
+
+            </div>
+        </div>
+
+
+
+{% if experience.experience_equipment %}
+ <div class="d-md-flex mt-2">
+    <div class="col-md-3 text-primary mx-sm-2">
+        <h3>Confira os equipamentos necessarios!</h3>
+          {% if experience.experience_equipment and user.is_authenticated and experience.author_experience == user %}
+          <div class="col-3 m-1">
+            <a href="{% url 'board:equipment_wizard_create' object.pk %}" class="btn btn-primary">Adicionar<br>equipamento</a>
+          </div>
+          {% endif %}
+
+    </div>
+     <div class="col-md-9 mx-sm-2">
+      <div class="card-columns text-primary mr-md-2">
+        {% for equipment in experience.equipments.all %}
+         <div class="card w-100">
+           {% if equipment.equipment_picture %}
+            <img src="{{MEDIA_URL}}{{ equipment.equipment_picture }}" class="card-img-top" alt="{{ equipment.equipment_picture }}">
+           {% endif %}
+           <div class="card-body">
+            <h5 class="card-title">{{ equipment.equipment_title }}</h5>
+            <p class="card-text">{{ equipment.equipment_description }}</p>
+            </div>
+            <div class="card-footer">
+            <small class="text-muted">{% if equipment.equipment_availability %}O afintrião disponibiliza esse equipamento! {% else %} Você precisa ter este equipamento.{% endif %}</small>
+                {% if user.is_authenticated and experience.author_experience == user %}
+            </div>
+            <div class="btn-group float-right m-1">
+                <div class="button mr-1">
+                      <a href="{% url 'board:experience_equipment_update' equipment.experience.pk equipment.pk %}" class="btn btn-primary">
+                          <img class="d-block" style="width: 1rem; height: 1rem;" src="{% static 'img/pencil.svg' %}" alt="update">
+                      </a>
+                </div>
+                <div class="button">
+                      <a href="{% url 'board:experience_equipment_delete' equipment.experience.pk equipment.pk %}" class="btn btn-primary">
+                          <img class="d-block" style="width: 1rem; height: 1rem;" src="{% static 'img/trash.svg' %}" alt="trash">
+                      </a>
+                </div>
+            </div>
+            {% endif %}
+
+         </div>
+        {% endfor %}
+      </div>
+     </div>
+ </div>
+ <br>
+{% endif %}
+
+ <div class="d-md-flex mt-2">
+    <div class="col-md-3 text-primary mx-sm-2">
+        <h3>Confira o local de encontro!</h3>
+         {% if user.is_authenticated and experience.author_experience == user and experience.e_locations.all.count == 0 %}
+              <div class="col-3 m-1">
+                  <a href="{% url 'board:experience_location_create' object.pk %}" class="btn btn-primary">Adicionar<br>local de<br>encontro</a>
+              </div>
+         {% endif %}
+        {% for e_location in experience.e_locations.all %}
+         {% if user.is_authenticated and experience.author_experience == user %}
+
+        <div class="col-3 m-1">
+                  <a href="{% url 'board:experience_location_update' e_location.experience.pk e_location.pk %}" class="btn btn-primary">
+                      <img class="img mr-2" style="width: 1rem; height: 1rem;" src="{% static 'img/pencil.svg' %}" alt="update">
+                      local
+
+                  </a>
+              </div>
+        {% endif %}
+    </div>
+    <div class="col-md-9 text-primary">
+        {% leaflet_map "main" callback="map_init" %}
+
+            {% if e_location %}
+                   <br>{{ e_location.e_address }} <br><strong>{{ e_location.e_city }}</strong>
+            {% endif %}
+
+            {% endfor %}
+    </div>
+ </div>
+
+
+ <div class="d-md-flex mt-2">
+    <div class="col-md-3 text-primary mx-sm-2">
+        <h3>Confira os comentarios de quem já participou!</h3>
+         {% if user.is_authenticated %}
+              <div class="row p-2">
+                  <a href="{% url 'board:experience_comment_create' object.pk %}" class="btn btn-primary">Deixe seu comentario!</a>
+              </div>
+            {% endif %}
+
+    </div>
+    <div class="col-md-12">
+    {% for e_comment in experience.e_comments.all %}
+        <div class="col-md-9 mt-1 border border-primary">
+            <div class="card-body mb-3">
+                    <div class="card-text">
+                         <ul class="navbar-nav">
+                             <a class="btn btn-sm px-4 border-0" href="{% url 'accounts:profile' username=user %}">
+                                 <div class="row">
+                                     <div class="col-1 align-self-center">
+                                         {% if e_comment.comment_author.profile.avatar %}
+                                         <img class="img rounded-circle" style="width: 2rem; height: 2rem" src="{{MEDIA_URL}}{{ e_comment.comment_author.profile.avatar }}" alt="{{ e_comment.comment_author.profile.avatar }}">
+                                         {% else %}
+                                         <i class="fa fa-2x fa-user-circle-o" aria-hidden="true"></i>
+                                         {% endif %}
+                                     </div>
+                                     <div class="col-3">
+                                         <div class="card-text">
+                                             <strong>
+                                                 {% if e_comment.comment_author.profile.first_name %}{{ e_comment.comment_author.profile.first_name }}{% else %}{{ e_comment.comment_author.profile.user }}{% endif %}
+                                             </strong>
+                                             <small class="text-muted">
+                                                {{ e_comment.comment_published|date:"b, Y" }}
+                                             </small>
+                                         </div>
+
+                                         <p class="card-text">
+                                            {% if e_comment.comment_star == '1' %}<img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            {% endif %}
+                                            {% if e_comment.comment_star == '2' %}<img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            <img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            {% endif %}
+                                            {% if e_comment.comment_star == '3' %}<img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            <img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            <img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            {% endif %}
+                                            {% if e_comment.comment_star == '4' %}<img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            <img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            <img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            <img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            {% endif %}
+                                            {% if e_comment.comment_star == '5' %}<img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            <img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            <img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            <img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            <img class="m1" style="width: 1rem" src="{% static 'img/star.svg' %}" alt="star">
+                                            {% endif %}
+                                        </p>
+                                     </div>
+                                 </div>
+                             </a>
+                         </ul>
+                    </div>
+                    <div class="card-text text-primary">
+                        <img class="img-fluid pr-2 float-left" style="width: 2rem" src="{% static 'img/quote_left.svg' %}" alt="quote_left">
+                        <p class="card-text">{{ e_comment.comment_description }}
+                        <img class="img-fluid p-2" style="width: 2rem" src="{% static 'img/quote_right.svg' %}" alt="quote_right">
+                        </p>
+                        {% if user.is_authenticated and e_comment.comment_author == user %}
+                        <div class="btn-group float-right">
+                            <div class="button mr-1">
+                                <a href="{% url 'board:experience_comment_update' e_comment.experience.pk e_comment.pk %}" class="btn btn-primary">
+                                    <img class="d-block" style="width: 1rem; height: 1rem;" src="{% static 'img/pencil.svg' %}" alt="update">
+                                </a>
+                            </div>
+                            <div class="button mr-1">
+                                <a href="{% url 'board:experience_comment_delete' e_comment.experience.pk e_comment.pk %}" class="btn btn-primary">
+                                    <img class="d-block" style="width: 1rem; height: 1rem;" src="{% static 'img/trash.svg' %}" alt="trash">
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+ </div>
+</div>
+<br>
+
+
+{% endblock %}
+{% block javascript %}
+<script>
+    $(document).ready(function(){
+        $('.dropdown-toggle').dropdown()
+    });
+
+    $(document).ready(function(){
+        $("#myToast").toast('show');
+    });
+
+</script>
+<script type="text/javascript">
+
+
+
+       function map_init (map, options) {
+
+        // get point lat and lon
+        {% for e_location in experience.e_locations.all %}
+
+        var lon = "{{ e_location.e_location.1|safe }}";
+        var lat = "{{ e_location.e_location.0|safe }}";
+
+
+        map.setView([lon, lat], 12);
+        L.marker([lon, lat]).addTo(map);
+
+
+
+        {% endfor %}
+
+    }
+
+</script>
+
+
+{% endblock %}
